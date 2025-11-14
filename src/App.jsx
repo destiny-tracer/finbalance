@@ -8,8 +8,6 @@ import Timeline from './components/Timeline';
 import Insights from './components/Insights';
 import { simulate } from './utils/amortize';
 
-// trigger deploy
-
 export default function App() {
   const [monthlyIncome, setMonthlyIncome] = useState(150000);
   const [cashReserve, setCashReserve] = useState(900000);
@@ -52,9 +50,9 @@ export default function App() {
   };
 
   const handleExportCsv = () => {
-    let csv = 'Loan,Balance,Rate,EMI,Tenure\n';
+    let csv = 'Loan,Balance,Rate,EMI,Tenure\r\n';
     loans.forEach((l) => {
-      csv += `${l.name},${l.balance},${l.rate},${l.emi},${l.tenure}\n`;
+      csv += `${l.name},${l.balance},${l.rate},${l.emi},${l.tenure}\r\n`;
     });
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -68,16 +66,17 @@ export default function App() {
   const handleStrategyChange = (e) => {
     setStrategy(e.target.value);
   };
+
   const handleSimulate = () => {
-  const result = simulate(loans, strategy, prepayAmount, monthlyIncome);
-  setTimeline(result.timeline);
-  setInsights(result.insights);
-  setLoans(result.updatedLoans);
+    const result = simulate(loans, strategy, prepayAmount, monthlyIncome);
+    setTimeline(result.timeline);
+    setInsights(result.insights);
+    setLoans(result.updatedLoans);
   };
 
   const totalOutstanding = loans.reduce((sum, loan) => sum + loan.balance, 0);
   const totalEmi = loans.reduce((sum, loan) => sum + loan.emi, 0);
-  const dti = totalEmi / (monthlyIncome || 1) * 100;
+  const dti = (totalEmi / (monthlyIncome || 1)) * 100;
 
   return (
     <div className="container">
@@ -102,11 +101,10 @@ export default function App() {
       />
 
       <StrategySelector strategy={strategy} onChange={handleStrategyChange} />
-      
+
       <div style={{ marginTop: '12px' }}>
         <button className="btn" onClick={handleSimulate}>Simulate</button>
       </div>
-
 
       <Summary
         totalOutstanding={totalOutstanding}
@@ -115,9 +113,7 @@ export default function App() {
       />
 
       <Charts loans={loans} />
-
       <Timeline timeline={timeline} />
-
       <Insights insights={insights} />
     </div>
   );
